@@ -2,13 +2,22 @@
     $scheduledValue = old('scheduled_for', $article->scheduled_for?->timezone(config('app.timezone'))->format('Y-m-d\TH:i'));
     $selectedImage = old('featured_image_path', $article->featured_image_path);
     $tags = old('tags', $tagsText);
-    $actions = $article->availableActions();
+    $actions = collect($article->availableActions())
+        ->filter(fn ($label, $intent) => auth()->user()->can('transition', [$article, $intent]))
+        ->all();
 @endphp
 
 <form method="POST" action="{{ $action }}" novalidate>
     @csrf
     @if ($method !== 'POST')
         @method($method)
+    @endif
+
+    @if ($article->status === \App\Models\Article::STATUS_REJECTED && $article->editor_note)
+        <div class="alert alert-warning border-0 mb-4" role="status">
+            <div class="fw-semibold mb-1">Sent back for changes</div>
+            <div class="text-break">{{ $article->editor_note }}</div>
+        </div>
     @endif
 
     <div class="row g-4">
@@ -113,6 +122,21 @@
                 </div>
             </div>
 
+            @if (isset($actions['reject']))
+                <div class="card border-0 shadow-sm mb-4">
+                    <div class="card-body p-4">
+                        <label for="editor_note" class="form-label fw-semibold">Note to the reporter</label>
+                        <textarea id="editor_note" name="editor_note" rows="4" maxlength="2000"
+                                  class="form-control @error('editor_note') is-invalid @enderror"
+                                  placeholder="What needs to change before this story can be approved?">{{ old('editor_note') }}</textarea>
+                        @error('editor_note')
+                            <div class="invalid-feedback">{{ $message }}</div>
+                        @enderror
+                        <div class="form-text">Only needed when you send a story back. The reporter sees this note.</div>
+                    </div>
+                </div>
+            @endif
+
             <div class="card border-0 shadow-sm">
                 <div class="card-body p-4">
                     <div class="fw-semibold mb-3">Featured image</div>
@@ -128,7 +152,7 @@
         </button>
         @foreach ($actions as $intent => $label)
             <button type="submit" name="intent" value="{{ $intent }}"
-                    class="btn {{ $intent === 'publish' ? 'btn-primary' : 'btn-outline-secondary' }}">
+                    class="btn {{ match ($intent) { 'publish', 'approve', 'submit' => 'btn-primary', 'reject' => 'btn-outline-danger', default => 'btn-outline-secondary' } }}">
                 {{ $label }}
             </button>
         @endforeach

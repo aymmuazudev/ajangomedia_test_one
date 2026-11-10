@@ -9,6 +9,7 @@ use App\Models\Article;
 use App\Models\Category;
 use App\Models\MediaFile;
 use App\Models\Tag;
+use App\Models\User;
 use App\Services\ArticlePublisher;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
@@ -23,6 +24,9 @@ class ArticleController extends Controller
 
     private const INTENT_MESSAGES = [
         'save' => 'Your changes have been saved.',
+        'submit' => 'The story has been sent to the editors for review.',
+        'approve' => 'The story has been approved and is ready to publish.',
+        'reject' => 'The story has been sent back to the reporter with your note.',
         'publish' => 'The story is now published.',
         'schedule' => 'The story is scheduled for publication.',
         'unpublish' => 'The story has been unpublished.',
@@ -43,8 +47,11 @@ class ArticleController extends Controller
         $categoryId = (int) $request->query('category', 0);
         $search = trim((string) $request->query('q', ''));
 
+        $user = $request->user();
+
         $articles = Article::query()
             ->with(['category:id,name', 'author:id,name'])
+            ->when($user->isNewsReporter(), fn ($query) => $query->where('author_id', $user->id))
             ->when(in_array($status, Article::STATUSES, true), fn ($query) => $query->where('status', $status))
             ->when($categoryId > 0, fn ($query) => $query->where('category_id', $categoryId))
             ->when($search !== '', fn ($query) => $query->where('title', 'like', '%'.addcslashes($search, '%_\\').'%'))
@@ -57,6 +64,7 @@ class ArticleController extends Controller
             'categories' => $this->categoryOptions(),
             'statuses' => Article::STATUS_LABELS,
             'filters' => compact('status', 'categoryId', 'search'),
+            'reporterCounts' => $user->isNewsReporter() ? $this->reporterStatusCounts($user) : null,
         ]);
     }
 
@@ -130,6 +138,7 @@ class ArticleController extends Controller
     private function persist(Article $article, SaveArticleRequest $request): void
     {
         $intent = $request->validated('intent');
+        $this->authorize('transition', [$article, $intent]);
 
         DB::transaction(function () use ($article, $request, $intent) {
             $article->fill([
@@ -144,6 +153,10 @@ class ArticleController extends Controller
                 'is_sponsored' => $request->boolean('is_sponsored'),
             ]);
 
+            if ($intent === 'reject') {
+                $article->editor_note = $request->validated('editor_note');
+            }
+
             $this->publisher->apply($article, $intent, $request->scheduledFor());
 
             $article->tags()->sync($this->tagIds($request->tagNames()));
@@ -154,6 +167,16 @@ class ArticleController extends Controller
     {
         return collect($names)
             ->map(fn (string $name) => Tag::firstOrCreate(['slug' => Str::slug($name)], ['name' => $name])->id)
+            ->all();
+    }
+
+    private function reporterStatusCounts(User $user): array
+    {
+        return Article::query()
+            ->where('author_id', $user->id)
+            ->selectRaw('status, count(*) as total')
+            ->groupBy('status')
+            ->pluck('total', 'status')
             ->all();
     }
 

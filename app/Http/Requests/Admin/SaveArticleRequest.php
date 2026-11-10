@@ -37,7 +37,15 @@ class SaveArticleRequest extends FormRequest
             'is_breaking' => ['nullable', 'boolean'],
             'is_sponsored' => ['nullable', 'boolean'],
             'scheduled_for' => ['nullable', 'date_format:Y-m-d\TH:i'],
+            'editor_note' => ['nullable', 'required_if:intent,reject', 'string', 'max:2000'],
             'intent' => ['required', Rule::in(ArticlePublisher::INTENTS)],
+        ];
+    }
+
+    public function messages(): array
+    {
+        return [
+            'editor_note.required_if' => 'Add a note explaining what the reporter needs to change.',
         ];
     }
 

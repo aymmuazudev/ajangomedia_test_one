@@ -101,8 +101,22 @@ class Article extends Model
     {
         return match ($this->status) {
             self::STATUS_DRAFT => [
+                'submit' => 'Submit for review',
                 'publish' => 'Publish now',
                 'schedule' => 'Schedule',
+                'archive' => 'Archive',
+            ],
+            self::STATUS_SUBMITTED => [
+                'approve' => 'Approve',
+                'reject' => 'Send back',
+            ],
+            self::STATUS_APPROVED => [
+                'publish' => 'Publish now',
+                'schedule' => 'Schedule',
+                'reject' => 'Send back',
+            ],
+            self::STATUS_REJECTED => [
+                'submit' => 'Resubmit for review',
                 'archive' => 'Archive',
             ],
             self::STATUS_SCHEDULED => [

@@ -41,6 +41,7 @@ class User extends Authenticatable
         self::ROLE_ADMINISTRATOR,
         self::ROLE_MANAGING_EDITOR,
         self::ROLE_EDITOR,
+        self::ROLE_NEWS_REPORTER,
         self::ROLE_MULTIMEDIA_EDITOR,
         self::ROLE_ADVERTISEMENT_MANAGER,
         self::ROLE_COMMENT_MODERATOR,
@@ -99,6 +100,11 @@ class User extends Authenticatable
     public function canAccessDashboard(): bool
     {
         return in_array($this->role, self::DASHBOARD_ROLES, true);
+    }
+
+    public function isNewsReporter(): bool
+    {
+        return $this->role === self::ROLE_NEWS_REPORTER;
     }
 
     public function isEditorialLead(): bool

@@ -10,6 +10,9 @@ class ArticlePublisher
 {
     public const INTENTS = [
         'save',
+        'submit',
+        'approve',
+        'reject',
         'publish',
         'schedule',
         'unpublish',
@@ -24,12 +27,24 @@ class ArticlePublisher
             'save' => $article->status === Article::STATUS_SCHEDULED
                 ? $this->schedule($article, $scheduledFor)
                 : $article->save(),
+            'submit' => $this->submit($article),
+            'approve' => $this->move($article, [Article::STATUS_SUBMITTED], Article::STATUS_APPROVED),
+            'reject' => $this->move(
+                $article,
+                [Article::STATUS_SUBMITTED, Article::STATUS_APPROVED],
+                Article::STATUS_REJECTED,
+            ),
             'publish' => $this->publish($article),
             'schedule' => $this->schedule($article, $scheduledFor),
             'unpublish' => $this->move($article, [Article::STATUS_PUBLISHED], Article::STATUS_UNPUBLISHED),
             'archive' => $this->move(
                 $article,
-                [Article::STATUS_DRAFT, Article::STATUS_PUBLISHED, Article::STATUS_UNPUBLISHED],
+                [
+                    Article::STATUS_DRAFT,
+                    Article::STATUS_PUBLISHED,
+                    Article::STATUS_UNPUBLISHED,
+                    Article::STATUS_REJECTED,
+                ],
                 Article::STATUS_ARCHIVED,
             ),
             'restore' => $this->move($article, [Article::STATUS_ARCHIVED], Article::STATUS_DRAFT),
@@ -37,10 +52,18 @@ class ArticlePublisher
         };
     }
 
+    private function submit(Article $article): void
+    {
+        $article->editor_note = null;
+
+        $this->move($article, [Article::STATUS_DRAFT, Article::STATUS_REJECTED], Article::STATUS_SUBMITTED);
+    }
+
     private function publish(Article $article): void
     {
         $this->assertCanMoveFrom($article, [
             Article::STATUS_DRAFT,
+            Article::STATUS_APPROVED,
             Article::STATUS_SCHEDULED,
             Article::STATUS_UNPUBLISHED,
         ]);
@@ -59,7 +82,11 @@ class ArticlePublisher
             ]);
         }
 
-        $this->assertCanMoveFrom($article, [Article::STATUS_DRAFT, Article::STATUS_SCHEDULED]);
+        $this->assertCanMoveFrom($article, [
+            Article::STATUS_DRAFT,
+            Article::STATUS_APPROVED,
+            Article::STATUS_SCHEDULED,
+        ]);
 
         $article->status = Article::STATUS_SCHEDULED;
         $article->scheduled_for = $scheduledFor;

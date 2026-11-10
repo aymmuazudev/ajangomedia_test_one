@@ -1,9 +1,29 @@
 @extends('layouts.admin')
 
 @section('title', 'Stories')
-@section('heading', 'Stories')
+@section('heading', auth()->user()->isNewsReporter() ? 'My stories' : 'Stories')
 
 @section('content')
+    @if ($reporterCounts !== null)
+        <div class="row row-cols-2 row-cols-md-4 g-3 mb-4">
+            @foreach ([
+                ['label' => 'Drafts', 'status' => \App\Models\Article::STATUS_DRAFT],
+                ['label' => 'Awaiting review', 'status' => \App\Models\Article::STATUS_SUBMITTED],
+                ['label' => 'Sent back to you', 'status' => \App\Models\Article::STATUS_REJECTED],
+                ['label' => 'Published', 'status' => \App\Models\Article::STATUS_PUBLISHED],
+            ] as $card)
+                <div class="col">
+                    <div class="card border-0 shadow-sm h-100">
+                        <div class="card-body">
+                            <div class="small text-secondary">{{ $card['label'] }}</div>
+                            <div class="fs-3 fw-semibold">{{ $reporterCounts[$card['status']] ?? 0 }}</div>
+                        </div>
+                    </div>
+                </div>
+            @endforeach
+        </div>
+    @endif
+
     <div class="d-flex flex-wrap justify-content-between align-items-center gap-2 mb-3">
         <form method="GET" action="{{ route('admin.articles.index') }}" class="d-flex flex-wrap gap-2" role="search">
             <input type="search" name="q" value="{{ $filters['search'] }}" class="form-control" placeholder="Search headlines" aria-label="Search stories">
@@ -23,9 +43,11 @@
             </select>
             <button type="submit" class="btn btn-outline-secondary">Filter</button>
         </form>
-        <a href="{{ route('admin.articles.create') }}" class="btn btn-primary">
-            <i class="bi bi-plus-lg me-1"></i>New story
-        </a>
+        @can('create', \App\Models\Article::class)
+            <a href="{{ route('admin.articles.create') }}" class="btn btn-primary">
+                <i class="bi bi-plus-lg me-1"></i>New story
+            </a>
+        @endcan
     </div>
 
     <div class="card border-0 shadow-sm">
@@ -45,7 +67,11 @@
                     @forelse ($articles as $article)
                         <tr>
                             <td>
-                                <a href="{{ route('admin.articles.edit', $article) }}" class="fw-semibold text-decoration-none">{{ $article->title }}</a>
+                                @can('update', $article)
+                                    <a href="{{ route('admin.articles.edit', $article) }}" class="fw-semibold text-decoration-none">{{ $article->title }}</a>
+                                @else
+                                    <span class="fw-semibold">{{ $article->title }}</span>
+                                @endcan
                                 <div class="small text-secondary">{{ $article->author?->name }}</div>
                             </td>
                             <td>{{ $article->category?->name ?? 'None' }}</td>
@@ -65,9 +91,11 @@
                                 @if ($article->is_sponsored) <span class="badge text-bg-secondary">Sponsored</span> @endif
                             </td>
                             <td class="text-end text-nowrap">
-                                <a href="{{ route('admin.articles.edit', $article) }}" class="btn btn-sm btn-outline-primary">
-                                    <i class="bi bi-pencil-square me-1"></i>Edit
-                                </a>
+                                @can('update', $article)
+                                    <a href="{{ route('admin.articles.edit', $article) }}" class="btn btn-sm btn-outline-primary">
+                                        <i class="bi bi-pencil-square me-1"></i>Edit
+                                    </a>
+                                @endcan
                             </td>
                         </tr>
                     @empty
