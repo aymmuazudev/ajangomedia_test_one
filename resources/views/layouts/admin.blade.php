@@ -26,6 +26,11 @@
         .admin-sidebar .nav-link { color: #1f2937; border-left: 3px solid transparent; }
         .admin-sidebar .nav-link:hover { color: var(--ajango-blue); }
         .admin-sidebar .nav-link.active { color: var(--ajango-blue); border-left-color: var(--ajango-blue); background: #f5f6f8; font-weight: 600; }
+        .image-picker__option { display: block; cursor: pointer; border: 2px solid transparent; border-radius: .375rem; overflow: hidden; background: #f5f6f8; }
+        .image-picker__none { min-height: 4.5rem; }
+        .btn-check:checked + .image-picker__option { border-color: var(--ajango-blue); }
+        .btn-check:focus-visible + .image-picker__option { outline: 2px solid var(--ajango-blue); outline-offset: 2px; }
+        .image-picker .ratio > img { position: absolute; inset: 0; width: 100%; height: 100%; }
     </style>
 </head>
 <body class="bg-light">
@@ -51,6 +56,26 @@
                 <a class="nav-link {{ request()->routeIs('admin.dashboard') ? 'active' : '' }}" href="{{ route('admin.dashboard') }}">
                     <i class="bi bi-house me-2"></i>Dashboard
                 </a>
+                @can('viewAny', App\Models\Article::class)
+                    <a class="nav-link {{ request()->routeIs('admin.articles.*') ? 'active' : '' }}" href="{{ route('admin.articles.index') }}">
+                        <i class="bi bi-file-earmark-text me-2"></i>Stories
+                    </a>
+                @endcan
+                @can('viewAny', App\Models\MediaFile::class)
+                    <a class="nav-link {{ request()->routeIs('admin.media.*') ? 'active' : '' }}" href="{{ route('admin.media.index') }}">
+                        <i class="bi bi-images me-2"></i>Media library
+                    </a>
+                @endcan
+                @can('viewAny', App\Models\Category::class)
+                    <a class="nav-link {{ request()->routeIs('admin.categories.*') ? 'active' : '' }}" href="{{ route('admin.categories.index') }}">
+                        <i class="bi bi-grid me-2"></i>Sections
+                    </a>
+                @endcan
+                @can('viewAny', App\Models\Tag::class)
+                    <a class="nav-link {{ request()->routeIs('admin.tags.*') ? 'active' : '' }}" href="{{ route('admin.tags.index') }}">
+                        <i class="bi bi-tags me-2"></i>Tags
+                    </a>
+                @endcan
                 @can('viewAny', App\Models\User::class)
                     <a class="nav-link {{ request()->routeIs('admin.users.*') ? 'active' : '' }}" href="{{ route('admin.users.index') }}">
                         <i class="bi bi-people me-2"></i>Users

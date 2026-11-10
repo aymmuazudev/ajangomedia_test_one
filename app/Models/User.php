@@ -96,6 +96,16 @@ class User extends Authenticatable
         return in_array($this->role, self::ADMINISTRATIVE_ROLES, true);
     }
 
+    public function canAccessDashboard(): bool
+    {
+        return in_array($this->role, self::DASHBOARD_ROLES, true);
+    }
+
+    public function isEditorialLead(): bool
+    {
+        return $this->isAdministrativeUser() || $this->role === self::ROLE_MANAGING_EDITOR;
+    }
+
     public function roleLabel(): string
     {
         return self::ROLE_LABELS[$this->role] ?? $this->role;

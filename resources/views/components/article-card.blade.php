@@ -12,7 +12,7 @@
     <a href="{{ route('articles.show', $article) }}" class="article-card__link d-block text-decoration-none">
         <div class="ratio ratio-16x9 article-card__media mb-3">
             @if ($article->featured_image_path)
-                <img src="{{ Storage::disk('public')->url($article->featured_image_path) }}"
+                <img src="{{ route('media.show', ['path' => $article->featured_image_path]) }}"
                      alt="{{ $article->title }}" loading="lazy" class="object-fit-cover">
             @else
                 <div class="article-card__fallback d-flex align-items-end p-3">

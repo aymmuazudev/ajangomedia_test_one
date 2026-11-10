@@ -41,7 +41,7 @@
 
             @if ($article->featured_image_path)
                 <figure class="mb-4">
-                    <img src="{{ Storage::disk('public')->url($article->featured_image_path) }}"
+                    <img src="{{ route('media.show', ['path' => $article->featured_image_path]) }}"
                          alt="{{ $article->title }}" class="img-fluid w-100 article-page__image">
                 </figure>
             @endif

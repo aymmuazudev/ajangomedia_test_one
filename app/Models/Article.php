@@ -8,6 +8,7 @@ use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\BelongsToMany;
 use Illuminate\Database\Eloquent\SoftDeletes;
 use Illuminate\Database\Eloquent\Builder;
+use Illuminate\Support\Str;
 
 class Article extends Model
 {
@@ -31,6 +32,17 @@ class Article extends Model
         self::STATUS_UNPUBLISHED,
         self::STATUS_REJECTED,
         self::STATUS_ARCHIVED,
+    ];
+
+    public const STATUS_LABELS = [
+        self::STATUS_DRAFT => 'Draft',
+        self::STATUS_SUBMITTED => 'Submitted',
+        self::STATUS_APPROVED => 'Approved',
+        self::STATUS_PUBLISHED => 'Published',
+        self::STATUS_SCHEDULED => 'Scheduled',
+        self::STATUS_UNPUBLISHED => 'Unpublished',
+        self::STATUS_REJECTED => 'Rejected',
+        self::STATUS_ARCHIVED => 'Archived',
     ];
 
     protected $fillable = [
@@ -65,6 +77,52 @@ class Article extends Model
     public function getRouteKeyName(): string
     {
         return 'slug';
+    }
+
+    public static function uniqueSlugFor(string $title): string
+    {
+        $base = Str::slug($title) ?: 'story';
+        $slug = $base;
+        $suffix = 2;
+
+        while (static::withTrashed()->where('slug', $slug)->exists()) {
+            $slug = $base.'-'.$suffix++;
+        }
+
+        return $slug;
+    }
+
+    public function statusLabel(): string
+    {
+        return self::STATUS_LABELS[$this->status] ?? $this->status;
+    }
+
+    public function availableActions(): array
+    {
+        return match ($this->status) {
+            self::STATUS_DRAFT => [
+                'publish' => 'Publish now',
+                'schedule' => 'Schedule',
+                'archive' => 'Archive',
+            ],
+            self::STATUS_SCHEDULED => [
+                'publish' => 'Publish now',
+                'schedule' => 'Reschedule',
+                'cancel_schedule' => 'Cancel schedule',
+            ],
+            self::STATUS_PUBLISHED => [
+                'unpublish' => 'Unpublish',
+                'archive' => 'Archive',
+            ],
+            self::STATUS_UNPUBLISHED => [
+                'publish' => 'Publish again',
+                'archive' => 'Archive',
+            ],
+            self::STATUS_ARCHIVED => [
+                'restore' => 'Restore to drafts',
+            ],
+            default => [],
+        };
     }
 
     public function isPublic(): bool
