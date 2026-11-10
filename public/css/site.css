@@ -1,0 +1,323 @@
+:root {
+    --ajango-blue: #0058d4;
+    --ajango-blue-dark: #0047ab;
+    --ajango-orange: #fe7600;
+    --ajango-black: #000000;
+    --ajango-grey: #f5f6f8;
+    --ajango-text: #1a1a1a;
+    --ajango-muted: #5b6270;
+}
+
+body {
+    font-family: 'Open Sans', system-ui, sans-serif;
+    font-size: 1rem;
+    line-height: 1.5;
+    color: var(--ajango-text);
+    background: #ffffff;
+    display: flex;
+    flex-direction: column;
+    min-height: 100vh;
+}
+
+#content {
+    flex: 1 0 auto;
+}
+
+h1, h2, h3, h4, h5, h6 {
+    font-family: 'Inter', system-ui, sans-serif;
+    font-weight: 700;
+    line-height: 1.2;
+    color: var(--ajango-black);
+}
+
+a {
+    color: var(--ajango-blue);
+}
+
+a:hover {
+    color: var(--ajango-blue-dark);
+}
+
+.bg-light {
+    background-color: var(--ajango-grey) !important;
+}
+
+.text-secondary {
+    color: var(--ajango-muted) !important;
+}
+
+.btn-primary {
+    --bs-btn-bg: var(--ajango-blue);
+    --bs-btn-border-color: var(--ajango-blue);
+    --bs-btn-hover-bg: var(--ajango-blue-dark);
+    --bs-btn-hover-border-color: var(--ajango-blue-dark);
+    --bs-btn-active-bg: var(--ajango-blue-dark);
+    --bs-btn-active-border-color: var(--ajango-blue-dark);
+}
+
+.site-top-bar {
+    background: var(--ajango-grey);
+    color: var(--ajango-text);
+    border-bottom: 1px solid #e3e6eb;
+}
+
+.site-header {
+    border-bottom: 1px solid #e3e6eb;
+}
+
+.brand-mark {
+    font-family: 'Inter', system-ui, sans-serif;
+    font-weight: 700;
+    font-size: 1.5rem;
+    letter-spacing: 0.02em;
+    color: var(--ajango-black);
+    display: inline-flex;
+    align-items: baseline;
+    gap: 0.25rem;
+}
+
+.brand-mark span {
+    color: var(--ajango-orange);
+}
+
+.brand-mark__legal {
+    font-size: 0.75rem;
+    color: var(--ajango-blue);
+    letter-spacing: 0.08em;
+}
+
+.brand-mark--light,
+.brand-mark--light .brand-mark__legal {
+    color: #ffffff;
+}
+
+.site-icon-button {
+    width: 2.75rem;
+    height: 2.75rem;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    border: 1px solid #d5d9e0;
+    transition: background-color 0.2s ease, border-color 0.2s ease;
+}
+
+.site-icon-button:hover,
+.site-icon-button:focus-visible {
+    background: var(--ajango-blue);
+    border-color: var(--ajango-blue);
+    color: #ffffff;
+}
+
+.site-nav {
+    position: sticky;
+    top: 0;
+    z-index: 1030;
+}
+
+.site-nav .nav-link {
+    color: var(--ajango-black);
+    font-weight: 600;
+    font-size: 0.9rem;
+    padding: 0.75rem 0.75rem;
+    border-bottom: 3px solid transparent;
+    transition: color 0.2s ease, border-color 0.2s ease;
+}
+
+.site-nav .nav-link:hover,
+.site-nav .nav-link:focus-visible,
+.site-nav .nav-link.active {
+    color: var(--ajango-blue);
+    border-bottom-color: var(--ajango-blue);
+}
+
+@media (min-width: 992px) {
+    .site-nav__list {
+        flex-wrap: nowrap;
+        overflow-x: auto;
+        scrollbar-width: thin;
+    }
+
+    .site-nav__list .nav-link {
+        white-space: nowrap;
+    }
+}
+
+.breaking-bar {
+    background: #ffffff;
+}
+
+.breaking-label {
+    background: var(--ajango-orange);
+    color: var(--ajango-black);
+    font-weight: 700;
+    font-size: 0.75rem;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    padding: 0.25rem 0.5rem;
+    flex-shrink: 0;
+}
+
+.breaking-ticker {
+    overflow: hidden;
+    white-space: nowrap;
+}
+
+.ticker-track {
+    display: inline-block;
+    padding-left: 100%;
+    animation: ticker-scroll 40s linear infinite;
+}
+
+.ticker-track:hover {
+    animation-play-state: paused;
+}
+
+.ticker-item {
+    color: var(--ajango-black);
+    font-weight: 600;
+    margin-right: 3rem;
+    text-decoration: none;
+}
+
+.ticker-item:hover {
+    color: var(--ajango-blue);
+}
+
+@keyframes ticker-scroll {
+    from { transform: translateX(0); }
+    to { transform: translateX(-100%); }
+}
+
+.section-heading {
+    border-top: 4px solid var(--ajango-black);
+    padding-top: 0.5rem;
+}
+
+.section-link {
+    color: var(--ajango-blue);
+}
+
+.category-label {
+    color: var(--ajango-blue);
+    font-size: 0.75rem;
+    font-weight: 700;
+    letter-spacing: 0.06em;
+    text-transform: uppercase;
+}
+
+.article-card__link {
+    color: inherit;
+}
+
+.article-card__link:hover .article-card__title {
+    color: var(--ajango-blue);
+}
+
+.article-card__title {
+    transition: color 0.2s ease;
+}
+
+.article-card__media {
+    overflow: hidden;
+    background: var(--ajango-grey);
+}
+
+.article-card__media img {
+    transition: transform 0.4s ease;
+}
+
+.article-card__link:hover .article-card__media img {
+    transform: scale(1.03);
+}
+
+.article-card__fallback {
+    background: var(--ajango-blue);
+    color: #ffffff;
+    letter-spacing: 0.06em;
+}
+
+.article-card__summary {
+    display: -webkit-box;
+    -webkit-line-clamp: 3;
+    -webkit-box-orient: vertical;
+    overflow: hidden;
+}
+
+.most-read-rank {
+    font-family: 'Inter', system-ui, sans-serif;
+    font-weight: 700;
+    font-size: 1.5rem;
+    line-height: 1;
+    color: var(--ajango-orange);
+    min-width: 1.5rem;
+}
+
+.most-read-link {
+    color: var(--ajango-black);
+}
+
+.most-read-link:hover {
+    color: var(--ajango-blue);
+}
+
+.empty-state {
+    background: var(--ajango-grey);
+    border-radius: 0.5rem;
+}
+
+.article-page {
+    max-width: 780px;
+}
+
+.article-page__title {
+    font-size: 2.25rem;
+}
+
+.article-page__subheadline {
+    color: var(--ajango-muted);
+}
+
+.article-page__image {
+    border-radius: 0.5rem;
+}
+
+.article-page__body {
+    font-size: 1.125rem;
+    line-height: 1.5;
+}
+
+.site-footer {
+    background: var(--ajango-black);
+    color: #d9dce1;
+}
+
+.site-footer a {
+    color: #ffffff;
+    text-decoration: none;
+}
+
+.site-footer a:hover {
+    color: var(--ajango-orange);
+}
+
+.footer-heading {
+    color: #ffffff;
+    letter-spacing: 0.06em;
+}
+
+.footer-links li + li {
+    margin-top: 0.5rem;
+}
+
+.footer-bottom {
+    border-top: 1px solid #2a2a2a;
+    color: #b8bcc4;
+}
+
+@media (prefers-reduced-motion: reduce) {
+    .ticker-track,
+    .article-card__media img {
+        animation: none;
+        transition: none;
+    }
+}

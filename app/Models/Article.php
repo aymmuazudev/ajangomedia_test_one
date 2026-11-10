@@ -62,6 +62,35 @@ class Article extends Model
         ];
     }
 
+    public function getRouteKeyName(): string
+    {
+        return 'slug';
+    }
+
+    public function isPublic(): bool
+    {
+        return $this->status === self::STATUS_PUBLISHED
+            && ($this->published_at === null || $this->published_at->lte(now()));
+    }
+
+    public function readingMinutes(): int
+    {
+        $words = str_word_count(strip_tags((string) $this->body));
+
+        return max(1, (int) ceil($words / 200));
+    }
+
+    public function scopeSearch(Builder $query, string $term): Builder
+    {
+        $like = '%'.addcslashes($term, '%_\\').'%';
+
+        return $query->where(function (Builder $query) use ($like) {
+            $query->where('title', 'like', $like)
+                ->orWhere('summary', 'like', $like)
+                ->orWhere('body', 'like', $like);
+        });
+    }
+
     public function category(): BelongsTo
     {
         return $this->belongsTo(Category::class);
