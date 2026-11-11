@@ -4,6 +4,7 @@ use App\Http\Controllers\Admin\ArticleController;
 use App\Http\Controllers\Admin\CategoryController;
 use App\Http\Controllers\Admin\CommentController;
 use App\Http\Controllers\Admin\DashboardController;
+use App\Http\Controllers\Admin\AdvertisementController;
 use App\Http\Controllers\Admin\LoginController;
 use App\Http\Controllers\Admin\MediaController;
 use App\Http\Controllers\Admin\PasswordResetController;
@@ -39,6 +40,7 @@ Route::prefix('admin')->group(function () {
             Route::post('comments/{comment}/approve', [CommentController::class, 'approve'])->name('comments.approve');
             Route::post('comments/{comment}/reject', [CommentController::class, 'reject'])->name('comments.reject');
             Route::delete('comments/{comment}', [CommentController::class, 'destroy'])->name('comments.destroy');
+            Route::resource('advertisements', AdvertisementController::class);
             Route::resource('media', MediaController::class)
                 ->only(['index', 'store', 'destroy'])
                 ->parameters(['media' => 'mediaFile']);

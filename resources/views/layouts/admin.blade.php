@@ -81,6 +81,11 @@
                         <i class="bi bi-chat-square-text me-2"></i>Comments
                     </a>
                 @endcan
+                @can('viewAny', App\Models\Advertisement::class)
+                    <a class="nav-link {{ request()->routeIs('admin.advertisements.*') ? 'active' : '' }}" href="{{ route('admin.advertisements.index') }}">
+                        <i class="bi bi-megaphone me-2"></i>Advertisements
+                    </a>
+                @endcan
                 @can('viewAny', App\Models\User::class)
                     <a class="nav-link {{ request()->routeIs('admin.users.*') ? 'active' : '' }}" href="{{ route('admin.users.index') }}">
                         <i class="bi bi-people me-2"></i>Users

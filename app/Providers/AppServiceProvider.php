@@ -22,6 +22,12 @@ class AppServiceProvider extends ServiceProvider
             $view->with('navigationCategories', Category::whereNull('parent_id')
                 ->orderBy('display_order')
                 ->get(['id', 'name', 'slug']));
+
+            $view->with('advertisementSlots', \App\Models\Advertisement::query()
+                ->running()
+                ->orderBy('id')
+                ->get()
+                ->groupBy('placement'));
         });
     }
 }

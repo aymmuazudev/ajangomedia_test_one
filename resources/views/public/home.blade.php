@@ -27,6 +27,10 @@
             </div>
         </section>
     @else
+        <div class="container">
+            <x-ad-slot slotName="home_top" formatClass="d-flex justify-content-center" />
+        </div>
+
         <section class="py-4" aria-label="Top stories">
             <div class="container">
                 <div class="row g-4">

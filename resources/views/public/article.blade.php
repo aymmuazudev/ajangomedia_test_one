@@ -39,6 +39,9 @@
                 </div>
             </header>
 
+            <div class="row g-4">
+                <div class="col-lg-8">
+
             @if ($article->featured_image_path)
                 <figure class="mb-4">
                     <img src="{{ route('media.show', ['path' => $article->featured_image_path]) }}"
@@ -54,11 +57,15 @@
                 {!! nl2br(e($article->body)) !!}
             </div>
 
+            <x-ad-slot slotName="sidebar" formatClass="d-lg-none" />
+
             <div class="d-flex justify-content-end mt-4">
                 <button type="button" class="btn btn-outline-secondary btn-sm" onclick="window.print()">
                     <i class="bi bi-printer me-1" aria-hidden="true"></i>Print this story
                 </button>
             </div>
+
+            <x-ad-slot slotName="article_inline" formatClass="d-flex justify-content-center" />
 
             <section class="mt-5 pt-4 border-top" aria-labelledby="comments-heading">
                 <h2 id="comments-heading" class="h4 mb-3">Comments <span class="text-secondary fs-6">({{ $approvedComments->count() }})</span></h2>
@@ -116,6 +123,12 @@
                     </div>
                 </form>
             </section>
+                </div>
+
+                <div class="col-lg-4">
+                    <x-ad-slot slotName="sidebar" />
+                </div>
+            </div>
         </div>
     </article>
 

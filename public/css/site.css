@@ -321,3 +321,18 @@ a:hover {
         transition: none;
     }
 }
+
+/* Advertisement slots */
+.ad-slot__item {
+    background: #f8f9fa;
+    overflow: hidden;
+}
+
+.ad-slot__item img {
+    max-width: 100%;
+    height: auto;
+}
+
+.ad-slot--sidebar .ad-slot__item {
+    text-align: center;
+}
