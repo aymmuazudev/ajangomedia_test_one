@@ -2,6 +2,7 @@
 
 use App\Http\Controllers\Public\ArticleController;
 use App\Http\Controllers\Public\CategoryController;
+use App\Http\Controllers\Public\CommentController as PublicCommentController;
 use App\Http\Controllers\Public\HomeController;
 use App\Http\Controllers\Public\MediaController;
 use App\Http\Controllers\Public\SearchController;
@@ -11,6 +12,7 @@ Route::get('/', [HomeController::class, 'index'])->name('home');
 Route::get('/search', [SearchController::class, 'index'])->name('search');
 Route::get('/category/{category:slug}', [CategoryController::class, 'show'])->name('categories.show');
 Route::get('/news/{article:slug}', [ArticleController::class, 'show'])->name('articles.show');
+Route::post('/news/{article:slug}/comments', [PublicCommentController::class, 'store'])->name('comments.store');
 Route::get('/media/{path}', [MediaController::class, 'show'])->where('path', '.+')->name('media.show');
 
 require __DIR__.'/admin.php';

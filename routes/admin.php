@@ -2,6 +2,7 @@
 
 use App\Http\Controllers\Admin\ArticleController;
 use App\Http\Controllers\Admin\CategoryController;
+use App\Http\Controllers\Admin\CommentController;
 use App\Http\Controllers\Admin\DashboardController;
 use App\Http\Controllers\Admin\LoginController;
 use App\Http\Controllers\Admin\MediaController;
@@ -34,6 +35,10 @@ Route::prefix('admin')->group(function () {
             Route::resource('articles', ArticleController::class)->except(['show']);
             Route::resource('categories', CategoryController::class)->except(['show']);
             Route::resource('tags', TagController::class)->only(['index', 'edit', 'update', 'destroy']);
+            Route::get('comments', [CommentController::class, 'index'])->name('comments.index');
+            Route::post('comments/{comment}/approve', [CommentController::class, 'approve'])->name('comments.approve');
+            Route::post('comments/{comment}/reject', [CommentController::class, 'reject'])->name('comments.reject');
+            Route::delete('comments/{comment}', [CommentController::class, 'destroy'])->name('comments.destroy');
             Route::resource('media', MediaController::class)
                 ->only(['index', 'store', 'destroy'])
                 ->parameters(['media' => 'mediaFile']);

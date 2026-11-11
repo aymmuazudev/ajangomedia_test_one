@@ -4,6 +4,7 @@ namespace App\Http\Controllers\Public;
 
 use App\Http\Controllers\Controller;
 use App\Models\Article;
+use App\Models\Comment;
 use Illuminate\View\View;
 
 class ArticleController extends Controller
@@ -16,6 +17,11 @@ class ArticleController extends Controller
 
         $article->load(['category', 'author:id,name']);
 
+        $approvedComments = $article->comments()
+            ->approved()
+            ->latest('id')
+            ->get();
+
         $relatedArticles = Article::published()
             ->where('category_id', $article->category_id)
             ->whereKeyNot($article->getKey())
@@ -24,6 +30,6 @@ class ArticleController extends Controller
             ->limit(self::RELATED_LIMIT)
             ->get();
 
-        return view('public.article', compact('article', 'relatedArticles'));
+        return view('public.article', compact('article', 'relatedArticles', 'approvedComments'));
     }
 }

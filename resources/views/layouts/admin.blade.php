@@ -76,6 +76,11 @@
                         <i class="bi bi-tags me-2"></i>Tags
                     </a>
                 @endcan
+                @can('viewAny', App\Models\Comment::class)
+                    <a class="nav-link {{ request()->routeIs('admin.comments.*') ? 'active' : '' }}" href="{{ route('admin.comments.index') }}">
+                        <i class="bi bi-chat-square-text me-2"></i>Comments
+                    </a>
+                @endcan
                 @can('viewAny', App\Models\User::class)
                     <a class="nav-link {{ request()->routeIs('admin.users.*') ? 'active' : '' }}" href="{{ route('admin.users.index') }}">
                         <i class="bi bi-people me-2"></i>Users
