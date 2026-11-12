@@ -2,14 +2,38 @@
 
 namespace App\Models;
 
+use App\Notifications\ResetPassword as CustomResetPassword;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Notifications\Notifiable;
+use Illuminate\Support\Facades\Password;
 
 class User extends Authenticatable
 {
     use HasFactory, Notifiable;
+
+    /**
+     * Send the password reset notification with our branded email template.
+     */
+    public function sendPasswordResetNotification($token): void
+    {
+        $this->notify(new CustomResetPassword($token));
+    }
+
+    /**
+     * Generate a password reset URL for this user, useful for embedding
+     * in the welcome email when an account is first created.
+     */
+    public function makePasswordResetUrl(): string
+    {
+        $token = Password::createToken($this);
+
+        return url(route('admin.password.reset', [
+            'token' => $token,
+            'email' => $this->getEmailForPasswordReset(),
+        ], false));
+    }
 
     public const ROLE_SUPER_ADMINISTRATOR = 'super_administrator';
     public const ROLE_ADMINISTRATOR = 'administrator';

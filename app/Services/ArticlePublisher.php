@@ -2,8 +2,10 @@
 
 namespace App\Services;
 
+use App\Mail\ArticlePublished;
 use App\Models\Article;
 use Carbon\CarbonInterface;
+use Illuminate\Support\Facades\Mail;
 use Illuminate\Validation\ValidationException;
 
 class ArticlePublisher
@@ -68,10 +70,19 @@ class ArticlePublisher
             Article::STATUS_UNPUBLISHED,
         ]);
 
+        $wasNotPublishedBefore = $article->published_at === null;
+        $publishedAt = $article->status === Article::STATUS_SCHEDULED && $article->scheduled_for
+            ? $article->scheduled_for
+            : now();
+
         $article->status = Article::STATUS_PUBLISHED;
-        $article->published_at = now();
+        $article->published_at = $publishedAt;
         $article->scheduled_for = null;
         $article->save();
+
+        if ($wasNotPublishedBefore && $article->author && $article->author->email) {
+            Mail::to($article->author->email)->queue(new ArticlePublished($article));
+        }
     }
 
     private function schedule(Article $article, ?CarbonInterface $scheduledFor): void

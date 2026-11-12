@@ -4,11 +4,13 @@ namespace App\Http\Controllers\Admin;
 
 use App\Http\Controllers\Controller;
 use App\Http\Requests\Admin\SaveUserRequest;
+use App\Mail\WelcomeNewUser;
 use App\Models\ActivityLog;
 use App\Models\User;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Mail;
 use Illuminate\Support\Facades\Password;
 use Illuminate\Support\Str;
 use Illuminate\View\View;
@@ -54,11 +56,13 @@ class UserController extends Controller
             'password' => Str::password(64),
         ]);
 
-        Password::sendResetLink(['email' => $user->email]);
+        $resetUrl = $user->makePasswordResetUrl();
+        Mail::to($user->email)->send(new WelcomeNewUser($user, $resetUrl));
+
         ActivityLog::record($request->user(), 'user.created', "Created the account for {$user->name} as {$user->roleLabel()}.");
 
         return redirect()->route('admin.users.index')
-            ->with('status', "Account created. A password setup link has been sent to {$user->email}.");
+            ->with('status', "Account created. A welcome email with a password setup link has been sent to {$user->email}.");
     }
 
     public function edit(Request $request, User $user): View
